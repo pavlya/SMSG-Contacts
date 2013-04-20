@@ -1,5 +1,8 @@
 package com.pavelalon.smsg_contacts.adapters;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -7,8 +10,14 @@ import com.pavelalon.smsg_contacts.beans.ContactEntity;
 import com.pavelalon.smsg_contacts.view.R;
 import com.pavelalon.smsg_contacts.view.SmsG_ContactsActivity;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.ContactsContract.Contacts;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -95,9 +104,8 @@ public class ImageAdapter extends BaseAdapter {
 		if (contacts.get(position).getPhotoURI()== null){
 			contactImage.setImageResource(mThumbIds[0]);
 		} else {
-			// TODO need to implement setting contact uri
-//			Uri imageUri = new Uri();
-//			contactImage.setImageURI(imageUri);
+			Bitmap picture = BitmapFactory.decodeStream(openPhoto(contacts.get(position).get_id()));
+			contactImage.setImageBitmap(picture);
 		}
 		contactName.setText(contacts.get(position).getContactName());
 //		contactName.setText(mNames[position]);
@@ -115,4 +123,42 @@ public class ImageAdapter extends BaseAdapter {
 		// return 720;
 		return 480;
 	}
+	
+	
+	// retrieve INputStream for photo file from URI 
+	public InputStream openDisplayPhoto(long contactId) {
+	     Uri contactUri = ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId);
+	     Uri displayPhotoUri = Uri.withAppendedPath(contactUri, Contacts.Photo.DISPLAY_PHOTO);
+	     try {
+	         AssetFileDescriptor fd =
+	             mContext.getContentResolver().openAssetFileDescriptor(displayPhotoUri, "r");
+	         return fd.createInputStream();
+	     } catch (IOException e) {
+	         return null;
+	     }
+	 }
+	
+	// thumbnail Photo
+	public InputStream openPhoto(long contactId) {
+	     Uri contactUri = ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId);
+	     Uri photoUri = Uri.withAppendedPath(contactUri, Contacts.Photo.CONTENT_DIRECTORY);
+	     Cursor cursor = mContext.getContentResolver().query(photoUri,
+	          new String[] {Contacts.Photo.PHOTO}, null, null, null);
+	     if (cursor == null) {
+	         return null;
+	     }
+	     try {
+	         if (cursor.moveToFirst()) {
+	             byte[] data = cursor.getBlob(0);
+	             if (data != null) {
+	                 return new ByteArrayInputStream(data);
+	             }
+	         }
+	     } finally {
+	         cursor.close();
+	     }
+	     return null;
+	 }
+
+
 }
