@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contactRL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black" >
+
+     <ImageView
+         android:id="@+id/contactImage"
+         android:layout_width="152dp"
+         android:layout_height="152dp"
+         android:layout_alignLeft="@+id/myRectangleView"
+         android:layout_centerVertical="true"
+         android:src="@drawable/ic_launcher" />
+
+     <View
+         android:id="@+id/myRectangleView"
+         android:layout_width="152dp"
+         android:layout_height="25dp"
+         android:layout_alignBottom="@+id/contactImage"
+         android:layout_centerHorizontal="true"
+         android:background="@drawable/user_image_bottom_shape" />
+
+     <TextView
+         android:id="@+id/contactName"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBottom="@+id/contactImage"
+         android:layout_centerHorizontal="true"
+         android:paddingBottom="4dp"
+         android:text="TextView" />
+
+</RelativeLayout>
